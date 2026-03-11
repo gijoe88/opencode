@@ -1176,6 +1176,10 @@ export namespace Config {
             .min(0)
             .optional()
             .describe("Token buffer for compaction. Leaves enough window to avoid overflow during compaction."),
+          warn_llm: z
+            .boolean()
+            .optional()
+            .describe("Warn the LLM before compaction, giving it one turn to register its state (default: false)"),
         })
         .optional(),
       experimental: z

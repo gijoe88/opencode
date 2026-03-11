@@ -34,6 +34,7 @@ import { Command } from "../command"
 import { $ } from "bun"
 import { pathToFileURL, fileURLToPath } from "url"
 import { ConfigMarkdown } from "../config/markdown"
+import { Config } from "../config/config"
 import { SessionSummary } from "./summary"
 import { NamedError } from "@opencode-ai/util/error"
 import { fn } from "@/util/fn"
@@ -290,6 +291,7 @@ export namespace SessionPrompt {
     // on the user message and will be retrieved from lastUser below
     let structuredOutput: unknown | undefined
 
+    let pendingCompaction = false
     let step = 0
     const session = await Session.get(sessionID)
     while (true) {
@@ -546,12 +548,34 @@ export namespace SessionPrompt {
         lastFinished.summary !== true &&
         (await SessionCompaction.isOverflow({ tokens: lastFinished.tokens, model }))
       ) {
+        const config = await Config.get()
+        if (config.compaction?.warn_llm && !pendingCompaction) {
+          pendingCompaction = true
+          const warnMsg = await Session.updateMessage({
+            id: Identifier.ascending("message"),
+            role: "user",
+            sessionID,
+            time: { created: Date.now() },
+            agent: lastUser.agent,
+            model: lastUser.model,
+          })
+          await Session.updatePart({
+            id: Identifier.ascending("part"),
+            messageID: warnMsg.id,
+            sessionID,
+            type: "text",
+            synthetic: true,
+            text: "<system-warning>Context limit approaching. Compaction will occur after your response. If you have important state to preserve (task progress, decisions made, files being worked on), summarize them now so they can be included in the compaction summary. Focus on registering what is essential for continuing the work.</system-warning>",
+          })
+          continue
+        }
         await SessionCompaction.create({
           sessionID,
           agent: lastUser.agent,
           model: lastUser.model,
           auto: true,
         })
+        pendingCompaction = false
         continue
       }
 
@@ -716,6 +740,7 @@ export namespace SessionPrompt {
           auto: true,
           overflow: !processor.message.finish,
         })
+        pendingCompaction = false
       }
       continue
     }

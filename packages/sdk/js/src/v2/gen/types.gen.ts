@@ -1477,6 +1477,10 @@ export type Config = {
      * Token buffer for compaction. Leaves enough window to avoid overflow during compaction.
      */
     reserved?: number
+    /**
+     * Warn the LLM before compaction, giving it one turn to register its state (default: false)
+     */
+    warn_llm?: boolean
   }
   experimental?: {
     disable_paste_summary?: boolean
