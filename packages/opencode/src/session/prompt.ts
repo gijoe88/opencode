@@ -552,7 +552,7 @@ export namespace SessionPrompt {
         if (config.compaction?.warn_llm && !pendingCompaction) {
           pendingCompaction = true
           const warnMsg = await Session.updateMessage({
-            id: Identifier.ascending("message"),
+            id: MessageID.ascending(),
             role: "user",
             sessionID,
             time: { created: Date.now() },
@@ -560,7 +560,7 @@ export namespace SessionPrompt {
             model: lastUser.model,
           })
           await Session.updatePart({
-            id: Identifier.ascending("part"),
+            id: PartID.ascending(),
             messageID: warnMsg.id,
             sessionID,
             type: "text",
