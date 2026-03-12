@@ -10689,6 +10689,10 @@
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              },
+              "warn_llm": {
+                "description": "Warn the LLM before compaction, giving it one turn to register its state (default: false)",
+                "type": "boolean"
               }
             }
           },
