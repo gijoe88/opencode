@@ -88,12 +88,12 @@ export namespace Process {
         if (timer) clearTimeout(timer)
       }
 
-      proc.once("exit", (code, signal) => {
+      proc.once("exit", (code: number | null, signal: NodeJS.Signals | null) => {
         done()
         resolve(code ?? (signal ? 1 : 0))
       })
 
-      proc.once("error", (error) => {
+      proc.once("error", (error: Error) => {
         done()
         reject(error)
       })
