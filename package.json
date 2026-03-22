@@ -87,7 +87,7 @@
     "@opencode-ai/plugin": "workspace:*",
     "@opencode-ai/script": "workspace:*",
     "@opencode-ai/sdk": "workspace:*",
-    "@opentui/core": "0.1.87",
+    "@opentui/core": "0.1.88",
     "@parcel/watcher": "2.5.1",
     "typescript": "catalog:"
   },
